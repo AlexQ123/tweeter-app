@@ -2,14 +2,25 @@ package edu.byu.cs.tweeter.server.service;
 
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
+import edu.byu.cs.tweeter.model.net.request.GetUserRequest;
 import edu.byu.cs.tweeter.model.net.request.LoginRequest;
 import edu.byu.cs.tweeter.model.net.request.LogoutRequest;
 import edu.byu.cs.tweeter.model.net.request.RegisterRequest;
 import edu.byu.cs.tweeter.model.net.response.AuthenticateResponse;
+import edu.byu.cs.tweeter.model.net.response.GetUserResponse;
 import edu.byu.cs.tweeter.model.net.response.LogoutResponse;
 import edu.byu.cs.tweeter.util.FakeData;
 
 public class UserService {
+
+    public GetUserResponse getUser(GetUserRequest request) {
+        if(request.getAlias() == null) {
+            throw new RuntimeException("[Bad Request] Missing user alias");
+        }
+
+        User user = getFakeData().findUserByAlias(request.getAlias());
+        return new GetUserResponse(user);
+    }
 
     public AuthenticateResponse login(LoginRequest request) {
         if(request.getUsername() == null){

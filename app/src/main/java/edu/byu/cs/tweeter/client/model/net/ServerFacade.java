@@ -4,10 +4,12 @@ import java.io.IOException;
 
 import edu.byu.cs.tweeter.model.net.TweeterRemoteException;
 import edu.byu.cs.tweeter.model.net.request.FollowingRequest;
+import edu.byu.cs.tweeter.model.net.request.GetUserRequest;
 import edu.byu.cs.tweeter.model.net.request.LoginRequest;
 import edu.byu.cs.tweeter.model.net.request.LogoutRequest;
 import edu.byu.cs.tweeter.model.net.request.RegisterRequest;
 
+import edu.byu.cs.tweeter.model.net.response.GetUserResponse;
 import edu.byu.cs.tweeter.model.net.response.LogoutResponse;
 import edu.byu.cs.tweeter.model.net.response.FollowingResponse;
 import edu.byu.cs.tweeter.model.net.response.AuthenticateResponse;
@@ -23,6 +25,10 @@ public class ServerFacade {
     private static final String SERVER_URL = "https://cwubyer045.execute-api.us-west-1.amazonaws.com/dev";
 
     private final ClientCommunicator clientCommunicator = new ClientCommunicator(SERVER_URL);
+
+    public GetUserResponse getUser(GetUserRequest request, String urlPath) throws IOException, TweeterRemoteException {
+        return clientCommunicator.doPost(urlPath, request, null, GetUserResponse.class);
+    }
 
     /**
      * Performs a login and if successful, returns the logged in user and an auth token.
