@@ -7,7 +7,7 @@ import edu.byu.cs.tweeter.model.net.request.LoginRequest;
 /**
  * A response for a {@link LoginRequest}.
  */
-public class LoginResponse extends Response {
+public class AuthenticateResponse extends Response {
 
     private User user;
     private AuthToken authToken;
@@ -17,7 +17,7 @@ public class LoginResponse extends Response {
      *
      * @param message a message describing why the request was unsuccessful.
      */
-    public LoginResponse(String message) {
+    public AuthenticateResponse(String message) {
         super(false, message);
     }
 
@@ -27,7 +27,7 @@ public class LoginResponse extends Response {
      * @param user the now logged in user.
      * @param authToken the auth token representing this user's session with the server.
      */
-    public LoginResponse(User user, AuthToken authToken) {
+    public AuthenticateResponse(User user, AuthToken authToken) {
         super(true, null);
         this.user = user;
         this.authToken = authToken;
