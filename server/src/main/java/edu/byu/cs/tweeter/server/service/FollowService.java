@@ -1,9 +1,13 @@
 package edu.byu.cs.tweeter.server.service;
 
+import java.util.Random;
+
 import edu.byu.cs.tweeter.model.net.request.GetFollowersRequest;
 import edu.byu.cs.tweeter.model.net.request.GetFollowingRequest;
+import edu.byu.cs.tweeter.model.net.request.IsFollowerRequest;
 import edu.byu.cs.tweeter.model.net.response.GetFollowersResponse;
 import edu.byu.cs.tweeter.model.net.response.GetFollowingResponse;
+import edu.byu.cs.tweeter.model.net.response.IsFollowerResponse;
 import edu.byu.cs.tweeter.server.dao.GetFollowersDAO;
 import edu.byu.cs.tweeter.server.dao.GetFollowingDAO;
 
@@ -37,6 +41,16 @@ public class FollowService {
             throw new RuntimeException("[Bad Request] Request needs to have a positive limit");
         }
         return getFollowersDAO().getFollowers(request);
+    }
+
+    public IsFollowerResponse determineIsFollower(IsFollowerRequest request) {
+        if (request.getFollowerAlias() == null) {
+            throw new RuntimeException("[Bad Request] Request needs to have a follower alias");
+        } else if (request.getFolloweeAlias() == null) {
+            throw new RuntimeException("[Bad Request] Request needs to have a followee alias");
+        }
+        boolean isFollower = new Random().nextInt() > 0;
+        return new IsFollowerResponse(isFollower);
     }
 
     /**
