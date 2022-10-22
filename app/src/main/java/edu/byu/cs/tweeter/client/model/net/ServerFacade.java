@@ -10,6 +10,7 @@ import edu.byu.cs.tweeter.model.net.request.GetStoryRequest;
 import edu.byu.cs.tweeter.model.net.request.GetUserRequest;
 import edu.byu.cs.tweeter.model.net.request.LoginRequest;
 import edu.byu.cs.tweeter.model.net.request.LogoutRequest;
+import edu.byu.cs.tweeter.model.net.request.PostStatusRequest;
 import edu.byu.cs.tweeter.model.net.request.RegisterRequest;
 
 import edu.byu.cs.tweeter.model.net.response.GetFeedResponse;
@@ -19,6 +20,7 @@ import edu.byu.cs.tweeter.model.net.response.GetUserResponse;
 import edu.byu.cs.tweeter.model.net.response.LogoutResponse;
 import edu.byu.cs.tweeter.model.net.response.GetFollowingResponse;
 import edu.byu.cs.tweeter.model.net.response.AuthenticateResponse;
+import edu.byu.cs.tweeter.model.net.response.PostStatusResponse;
 
 /**
  * Acts as a Facade to the Tweeter server. All network requests to the server should go through
@@ -79,6 +81,11 @@ public class ServerFacade {
     public GetStoryResponse getStory(GetStoryRequest request, String urlPath)
             throws IOException, TweeterRemoteException {
         return clientCommunicator.doPost(urlPath, request, null, GetStoryResponse.class);
+    }
+
+    public PostStatusResponse postStatus(PostStatusRequest request, String urlPath)
+            throws IOException, TweeterRemoteException {
+        return clientCommunicator.doPost(urlPath, request, null, PostStatusResponse.class);
     }
 
 }
