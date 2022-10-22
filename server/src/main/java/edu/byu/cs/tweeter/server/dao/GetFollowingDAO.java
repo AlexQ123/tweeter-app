@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.byu.cs.tweeter.model.domain.User;
-import edu.byu.cs.tweeter.model.net.request.FollowingRequest;
-import edu.byu.cs.tweeter.model.net.response.FollowingResponse;
+import edu.byu.cs.tweeter.model.net.request.GetFollowingRequest;
+import edu.byu.cs.tweeter.model.net.response.GetFollowingResponse;
 import edu.byu.cs.tweeter.util.FakeData;
 
 /**
  * A DAO for accessing 'following' data from the database.
  */
-public class FollowDAO {
+public class GetFollowingDAO {
 
     /**
      * Gets the count of users from the database that the user specified is following. The
@@ -36,7 +36,7 @@ public class FollowDAO {
      *                other information required to satisfy the request.
      * @return the followees.
      */
-    public FollowingResponse getFollowees(FollowingRequest request) {
+    public GetFollowingResponse getFollowees(GetFollowingRequest request) {
         // TODO: Generates dummy data. Replace with a real implementation.
         assert request.getLimit() > 0;
         assert request.getFollowerAlias() != null;
@@ -58,7 +58,7 @@ public class FollowDAO {
             }
         }
 
-        return new FollowingResponse(responseFollowees, hasMorePages);
+        return new GetFollowingResponse(responseFollowees, hasMorePages);
     }
 
     /**
