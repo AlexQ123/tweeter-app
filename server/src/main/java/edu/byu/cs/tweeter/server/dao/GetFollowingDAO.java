@@ -17,12 +17,12 @@ public class GetFollowingDAO {
      * Gets the count of users from the database that the user specified is following. The
      * current implementation uses generated data and doesn't actually access a database.
      *
-     * @param follower the User whose count of how many following is desired.
+     * @param followerAlias the alias of the User whose count of how many following is desired.
      * @return said count.
      */
-    public Integer getFolloweeCount(User follower) {
+    public Integer getFolloweeCount(String followerAlias) {
         // TODO: uses the dummy data.  Replace with a real implementation.
-        assert follower != null;
+        assert followerAlias != null;
         return getDummyFollowees().size();
     }
 

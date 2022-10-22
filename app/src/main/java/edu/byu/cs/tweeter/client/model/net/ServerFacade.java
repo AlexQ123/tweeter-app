@@ -5,6 +5,7 @@ import java.io.IOException;
 import edu.byu.cs.tweeter.model.net.TweeterRemoteException;
 import edu.byu.cs.tweeter.model.net.request.FollowRequest;
 import edu.byu.cs.tweeter.model.net.request.GetFeedRequest;
+import edu.byu.cs.tweeter.model.net.request.GetCountRequest;
 import edu.byu.cs.tweeter.model.net.request.GetFollowersRequest;
 import edu.byu.cs.tweeter.model.net.request.GetFollowingRequest;
 import edu.byu.cs.tweeter.model.net.request.GetStoryRequest;
@@ -18,6 +19,7 @@ import edu.byu.cs.tweeter.model.net.request.RegisterRequest;
 import edu.byu.cs.tweeter.model.net.request.UnfollowRequest;
 import edu.byu.cs.tweeter.model.net.response.FollowResponse;
 import edu.byu.cs.tweeter.model.net.response.GetFeedResponse;
+import edu.byu.cs.tweeter.model.net.response.GetCountResponse;
 import edu.byu.cs.tweeter.model.net.response.GetFollowersResponse;
 import edu.byu.cs.tweeter.model.net.response.GetStoryResponse;
 import edu.byu.cs.tweeter.model.net.response.GetUserResponse;
@@ -92,6 +94,16 @@ public class ServerFacade {
     public FollowResponse follow(FollowRequest request, String urlPath)
             throws IOException, TweeterRemoteException {
         return clientCommunicator.doPost(urlPath, request, null, FollowResponse.class);
+    }
+
+    public GetCountResponse getFollowersCount(GetCountRequest request, String urlPath)
+            throws IOException, TweeterRemoteException {
+        return clientCommunicator.doPost(urlPath, request, null, GetCountResponse.class);
+    }
+
+    public GetCountResponse getFollowingCount(GetCountRequest request, String urlPath)
+            throws IOException, TweeterRemoteException {
+        return clientCommunicator.doPost(urlPath, request, null, GetCountResponse.class);
     }
 
     public GetFeedResponse getFeed(GetFeedRequest request, String urlPath)

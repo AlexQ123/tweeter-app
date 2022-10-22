@@ -35,4 +35,5 @@ public class LogoutTask extends AuthenticatedTask {
             sendFailedMessage(response.getMessage());
         }
     }
+
 }

@@ -10,9 +10,9 @@ import edu.byu.cs.tweeter.util.FakeData;
 
 public class GetFollowersDAO {
 
-    public Integer getFollowerCount(User followee) {
+    public Integer getFollowerCount(String followeeAlias) {
         // TODO: uses the dummy data.  Replace with a real implementation.
-        assert followee != null;
+        assert followeeAlias != null;
         return getDummyFollowers().size();
     }
 

@@ -16,4 +16,5 @@ public abstract class PagedUserTask extends PagedTask<User> {
     protected final List<User> getUsersForItems(List<User> items) {
         return items;
     }
+
 }

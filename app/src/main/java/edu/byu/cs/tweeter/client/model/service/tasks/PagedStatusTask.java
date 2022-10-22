@@ -19,5 +19,6 @@ public abstract class PagedStatusTask extends PagedTask<Status> {
     protected final List<User> getUsersForItems(List<Status> items) {
         return items.stream().map(x -> x.user).collect(Collectors.toList());
     }
+
 }
 

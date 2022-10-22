@@ -36,10 +36,10 @@ public abstract class AuthenticateTask extends BackgroundTask {
         this.password = password;
     }
 
-
     @Override
     protected final void runTask() throws IOException, TweeterRemoteException {
         AuthenticateResponse response = runAuthenticationTask();
+
         if (response.isSuccess()) {
             authenticatedUser = response.getUser();
             authToken = response.getAuthToken();

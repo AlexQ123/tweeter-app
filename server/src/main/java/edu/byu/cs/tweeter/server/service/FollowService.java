@@ -3,11 +3,13 @@ package edu.byu.cs.tweeter.server.service;
 import java.util.Random;
 
 import edu.byu.cs.tweeter.model.net.request.FollowRequest;
+import edu.byu.cs.tweeter.model.net.request.GetCountRequest;
 import edu.byu.cs.tweeter.model.net.request.GetFollowersRequest;
 import edu.byu.cs.tweeter.model.net.request.GetFollowingRequest;
 import edu.byu.cs.tweeter.model.net.request.IsFollowerRequest;
 import edu.byu.cs.tweeter.model.net.request.UnfollowRequest;
 import edu.byu.cs.tweeter.model.net.response.FollowResponse;
+import edu.byu.cs.tweeter.model.net.response.GetCountResponse;
 import edu.byu.cs.tweeter.model.net.response.GetFollowersResponse;
 import edu.byu.cs.tweeter.model.net.response.GetFollowingResponse;
 import edu.byu.cs.tweeter.model.net.response.IsFollowerResponse;
@@ -69,6 +71,20 @@ public class FollowService {
             throw new RuntimeException("[Bad Request] Request needs to have a followee alias");
         }
         return new FollowResponse();
+    }
+
+    public GetCountResponse getFollowersCount(GetCountRequest request) {
+        if (request.getTargetUserAlias() == null) {
+            throw new RuntimeException("[Bad Request] Request needs to have a target user alias");
+        }
+        return new GetCountResponse(getFollowersDAO().getFollowerCount(request.getTargetUserAlias()));
+    }
+
+    public GetCountResponse getFollowingCount(GetCountRequest request) {
+        if (request.getTargetUserAlias() == null) {
+            throw new RuntimeException("[Bad Request] Request needs to have a target user alias");
+        }
+        return new GetCountResponse(getFollowingDAO().getFolloweeCount(request.getTargetUserAlias()));
     }
 
     /**
