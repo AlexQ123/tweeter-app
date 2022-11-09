@@ -20,6 +20,8 @@ public class DynamoUserDAO extends DynamoDAO implements UserDAO {
 
     private static final String TableName = "user";
 
+    private static final DynamoDbTable<UserBean> userTable = enhancedClient.table(TableName, TableSchema.fromBean(UserBean.class));
+
     private static final String HandleAttr = "user_alias";
     private static final String PasswordAttr = "password";
     private static final String FirstNameAttr = "first_name";
@@ -39,7 +41,7 @@ public class DynamoUserDAO extends DynamoDAO implements UserDAO {
     @Override
     public AuthenticateResponse register(RegisterRequest request) {
         try {
-            DynamoDbTable<UserBean> userTable = enhancedClient.table(TableName, TableSchema.fromBean(UserBean.class));
+            //DynamoDbTable<UserBean> userTable = enhancedClient.table(TableName, TableSchema.fromBean(UserBean.class));
 
             UserBean user = new UserBean();
             user.setUser_alias(request.getUsername());
@@ -66,7 +68,7 @@ public class DynamoUserDAO extends DynamoDAO implements UserDAO {
 
     @Override
     public boolean findUser(String username) {
-        DynamoDbTable<UserBean> userTable = enhancedClient.table(TableName, TableSchema.fromBean(UserBean.class));
+        //DynamoDbTable<UserBean> userTable = enhancedClient.table(TableName, TableSchema.fromBean(UserBean.class));
 
         Key key = Key.builder()
                 .partitionValue(username)

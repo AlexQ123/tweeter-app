@@ -1,5 +1,8 @@
 package edu.byu.cs.tweeter.server.service;
 
+import java.sql.Timestamp;
+import java.util.UUID;
+
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.net.request.GetUserRequest;
@@ -9,6 +12,8 @@ import edu.byu.cs.tweeter.model.net.request.RegisterRequest;
 import edu.byu.cs.tweeter.model.net.response.AuthenticateResponse;
 import edu.byu.cs.tweeter.model.net.response.GetUserResponse;
 import edu.byu.cs.tweeter.model.net.response.LogoutResponse;
+import edu.byu.cs.tweeter.server.dao.AuthTokenDAO;
+import edu.byu.cs.tweeter.server.dao.DynamoAuthTokenDAO;
 import edu.byu.cs.tweeter.server.dao.DynamoUserDAO;
 import edu.byu.cs.tweeter.server.dao.ImageDAO;
 import edu.byu.cs.tweeter.server.dao.S3ImageDAO;
@@ -54,6 +59,7 @@ public class UserService {
 
         UserDAO userDAO = new DynamoUserDAO();
         ImageDAO imageDAO = new S3ImageDAO();
+        AuthTokenDAO authTokenDAO = new DynamoAuthTokenDAO();
 
         // Check to make sure the user alias doesn't already exist in the database
         if (userDAO.findUser(request.getUsername())) {
@@ -64,9 +70,17 @@ public class UserService {
         request.setImage(imageURL);
         AuthenticateResponse response = userDAO.register(request);
 
-        User user = getDummyUser();
-        AuthToken authToken = getDummyAuthToken();
-        return new AuthenticateResponse(user, authToken);
+        if (response.isSuccess()) {
+            String token = UUID.randomUUID().toString();
+            long currentTime = new Timestamp(System.currentTimeMillis()).getTime();
+            authTokenDAO.addToken(token, currentTime);
+            response.setAuthToken(new AuthToken(token));
+        }
+
+        return response;
+//        User user = getDummyUser();
+//        AuthToken authToken = getDummyAuthToken();
+//        return new AuthenticateResponse(user, authToken);
     }
 
     public LogoutResponse logout(LogoutRequest logoutRequest) {
