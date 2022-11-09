@@ -41,12 +41,6 @@ public class DynamoUserDAO extends DynamoDAO implements UserDAO {
         try {
             DynamoDbTable<UserBean> userTable = enhancedClient.table(TableName, TableSchema.fromBean(UserBean.class));
 
-            UserBean foundUser = findUser(request.getUsername());
-
-            if (foundUser != null) {
-                return new AuthenticateResponse("Username is taken, please choose a different one.");
-            }
-
             UserBean user = new UserBean();
             user.setUser_alias(request.getUsername());
             user.setPassword(request.getPassword());
@@ -70,7 +64,8 @@ public class DynamoUserDAO extends DynamoDAO implements UserDAO {
         return null;
     }
 
-    private UserBean findUser(String username) {
+    @Override
+    public boolean findUser(String username) {
         DynamoDbTable<UserBean> userTable = enhancedClient.table(TableName, TableSchema.fromBean(UserBean.class));
 
         Key key = Key.builder()
@@ -78,7 +73,7 @@ public class DynamoUserDAO extends DynamoDAO implements UserDAO {
                 .build();
 
         return userTable.getItem(
-                (GetItemEnhancedRequest.Builder requestBuilder) -> requestBuilder.key(key));
+                (GetItemEnhancedRequest.Builder requestBuilder) -> requestBuilder.key(key)) != null;
     }
 
 }

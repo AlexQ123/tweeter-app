@@ -14,5 +14,6 @@ public interface UserDAO {
     AuthenticateResponse login(LoginRequest request);
     AuthenticateResponse register(RegisterRequest request);
     LogoutResponse logout(LogoutRequest request);
+    boolean findUser(String username);
 
 }

@@ -10,6 +10,8 @@ import edu.byu.cs.tweeter.model.net.response.AuthenticateResponse;
 import edu.byu.cs.tweeter.model.net.response.GetUserResponse;
 import edu.byu.cs.tweeter.model.net.response.LogoutResponse;
 import edu.byu.cs.tweeter.server.dao.DynamoUserDAO;
+import edu.byu.cs.tweeter.server.dao.ImageDAO;
+import edu.byu.cs.tweeter.server.dao.S3ImageDAO;
 import edu.byu.cs.tweeter.server.dao.UserDAO;
 import edu.byu.cs.tweeter.util.FakeData;
 
@@ -51,8 +53,16 @@ public class UserService {
         }
 
         UserDAO userDAO = new DynamoUserDAO();
+        ImageDAO imageDAO = new S3ImageDAO();
+
+        // Check to make sure the user alias doesn't already exist in the database
+        if (userDAO.findUser(request.getUsername())) {
+            return new AuthenticateResponse("Username is taken, please choose a different one.");
+        }
+
+        String imageURL = imageDAO.uploadImage(request.getImage(), request.getUsername());
+        request.setImage(imageURL);
         AuthenticateResponse response = userDAO.register(request);
-        System.err.println(response);
 
         User user = getDummyUser();
         AuthToken authToken = getDummyAuthToken();
