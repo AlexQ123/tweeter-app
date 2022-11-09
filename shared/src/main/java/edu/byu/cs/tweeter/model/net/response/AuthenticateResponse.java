@@ -50,4 +50,8 @@ public class AuthenticateResponse extends Response {
     public AuthToken getAuthToken() {
         return authToken;
     }
+
+    public void setAuthToken(AuthToken authToken) {
+        this.authToken = authToken;
+    }
 }

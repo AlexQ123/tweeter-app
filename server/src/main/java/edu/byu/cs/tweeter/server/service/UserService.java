@@ -9,6 +9,8 @@ import edu.byu.cs.tweeter.model.net.request.RegisterRequest;
 import edu.byu.cs.tweeter.model.net.response.AuthenticateResponse;
 import edu.byu.cs.tweeter.model.net.response.GetUserResponse;
 import edu.byu.cs.tweeter.model.net.response.LogoutResponse;
+import edu.byu.cs.tweeter.server.dao.DynamoUserDAO;
+import edu.byu.cs.tweeter.server.dao.UserDAO;
 import edu.byu.cs.tweeter.util.FakeData;
 
 public class UserService {
@@ -47,6 +49,10 @@ public class UserService {
         } else if(request.getPassword() == null) {
             throw new RuntimeException("[Bad Request] Missing a password");
         }
+
+        UserDAO userDAO = new DynamoUserDAO();
+        AuthenticateResponse response = userDAO.register(request);
+        System.err.println(response);
 
         User user = getDummyUser();
         AuthToken authToken = getDummyAuthToken();
