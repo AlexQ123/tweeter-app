@@ -13,6 +13,7 @@ import edu.byu.cs.tweeter.model.net.response.AuthenticateResponse;
 import edu.byu.cs.tweeter.model.net.response.GetUserResponse;
 import edu.byu.cs.tweeter.model.net.response.LogoutResponse;
 import edu.byu.cs.tweeter.server.dao.AuthTokenDAO;
+import edu.byu.cs.tweeter.server.dao.DAOFactory;
 import edu.byu.cs.tweeter.server.dao.DynamoAuthTokenDAO;
 import edu.byu.cs.tweeter.server.dao.DynamoUserDAO;
 import edu.byu.cs.tweeter.server.dao.ImageDAO;
@@ -20,7 +21,11 @@ import edu.byu.cs.tweeter.server.dao.S3ImageDAO;
 import edu.byu.cs.tweeter.server.dao.UserDAO;
 import edu.byu.cs.tweeter.util.FakeData;
 
-public class UserService {
+public class UserService extends Service {
+
+    public UserService(DAOFactory daoFactory) {
+        super(daoFactory);
+    }
 
     public GetUserResponse getUser(GetUserRequest request) {
         if(request.getAlias() == null) {
@@ -57,19 +62,18 @@ public class UserService {
             throw new RuntimeException("[Bad Request] Missing a password");
         }
 
-        UserDAO userDAO = new DynamoUserDAO();
-        ImageDAO imageDAO = new S3ImageDAO();
-        AuthTokenDAO authTokenDAO = new DynamoAuthTokenDAO();
-
         // Check to make sure the user alias doesn't already exist in the database
         if (userDAO.findUser(request.getUsername())) {
             return new AuthenticateResponse("Username is taken, please choose a different one.");
         }
 
+        // Upload the image to S3 first to obtain the URL
         String imageURL = imageDAO.uploadImage(request.getImage(), request.getUsername());
         request.setImage(imageURL);
+        // Inserting the user into the DB
         AuthenticateResponse response = userDAO.register(request);
 
+        // If we successfully register, create an auth token
         if (response.isSuccess()) {
             String token = UUID.randomUUID().toString();
             long currentTime = new Timestamp(System.currentTimeMillis()).getTime();
@@ -78,9 +82,6 @@ public class UserService {
         }
 
         return response;
-//        User user = getDummyUser();
-//        AuthToken authToken = getDummyAuthToken();
-//        return new AuthenticateResponse(user, authToken);
     }
 
     public LogoutResponse logout(LogoutRequest logoutRequest) {
