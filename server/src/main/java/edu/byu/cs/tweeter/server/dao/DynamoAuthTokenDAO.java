@@ -1,5 +1,9 @@
 package edu.byu.cs.tweeter.server.dao;
 
+import java.sql.Timestamp;
+import java.util.UUID;
+
+import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.server.dao.bean.AuthTokenBean;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
@@ -15,7 +19,10 @@ public class DynamoAuthTokenDAO extends DynamoDAO implements AuthTokenDAO {
     private static final DynamoDbTable<AuthTokenBean> authtokenTable = enhancedClient.table(TableName, TableSchema.fromBean(AuthTokenBean.class));
 
     @Override
-    public void addToken(String token, long currentTime) {
+    public AuthToken addToken() {
+        String token = UUID.randomUUID().toString();
+        long currentTime = new Timestamp(System.currentTimeMillis()).getTime();
+
         try {
             AuthTokenBean authtoken = new AuthTokenBean();
             authtoken.setAuthtoken(token);
@@ -27,6 +34,8 @@ public class DynamoAuthTokenDAO extends DynamoDAO implements AuthTokenDAO {
             System.err.println(e.getMessage());
             System.exit(1);
         }
+
+        return new AuthToken(token);
     }
 
     @Override

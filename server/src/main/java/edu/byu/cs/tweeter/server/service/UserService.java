@@ -43,10 +43,30 @@ public class UserService extends Service {
             throw new RuntimeException("[Bad Request] Missing a password");
         }
 
-        // TODO: Generates dummy data. Replace with a real implementation.
-        User user = getDummyUser();
-        AuthToken authToken = getDummyAuthToken();
-        return new AuthenticateResponse(user, authToken);
+        // Check to make sure a user with the requested username exists in the DB
+        if (!userDAO.findUser(request.getUsername())) {
+            return new AuthenticateResponse("There is no account that exists with this username.");
+        }
+
+        // Hash the password before checking
+        request.setPassword(hashPassword(request.getPassword()));
+
+        // Make sure the password in the request matches the one in the DB
+        if (!userDAO.validPassword(request.getUsername(), request.getPassword())) {
+            return new AuthenticateResponse("The password is incorrect.");
+        }
+
+        // Now that we know the user exists and the password is correct, get the User object
+        User userToLogIn = userDAO.login(request);
+
+        // Add the authtoken
+        AuthToken authToken = authTokenDAO.addToken();
+
+        return new AuthenticateResponse(userToLogIn, authToken);
+
+//        User user = getDummyUser();
+//        AuthToken authToken = getDummyAuthToken();
+//        return new AuthenticateResponse(user, authToken);
     }
 
     public AuthenticateResponse register(RegisterRequest request) {
@@ -70,22 +90,27 @@ public class UserService extends Service {
         // Upload the image to S3 first to obtain the URL
         String imageURL = imageDAO.uploadImage(request.getImage(), request.getUsername());
         request.setImage(imageURL);
-        // Inserting the user into the DB
-        AuthenticateResponse response = userDAO.register(request);
 
-        // If we successfully register, create an auth token
-        if (response.isSuccess()) {
-            String token = UUID.randomUUID().toString();
-            long currentTime = new Timestamp(System.currentTimeMillis()).getTime();
-            authTokenDAO.addToken(token, currentTime);
-            response.setAuthToken(new AuthToken(token));
-        }
+        // Hash the password before putting in DB
+        request.setPassword(hashPassword(request.getPassword()));
 
-        return response;
+        // Get the user that was just inserted into the DB
+        User user = userDAO.register(request);
+
+        // After registering the user, add an authtoken
+        AuthToken authToken = authTokenDAO.addToken();
+
+        return new AuthenticateResponse(user, authToken);
     }
 
     public LogoutResponse logout(LogoutRequest logoutRequest) {
+        authTokenDAO.deleteToken(logoutRequest.getAuthToken().getToken());
+
         return new LogoutResponse();
+    }
+
+    private String hashPassword(String password) {
+        return password;
     }
 
     /**

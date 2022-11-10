@@ -29,17 +29,24 @@ public class DynamoUserDAO extends DynamoDAO implements UserDAO {
     private static final String ImageAttr = "image";
 
     @Override
-    public GetUserResponse getUser(GetUserRequest request) {
+    public User getUser(GetUserRequest request) {
         return null;
     }
 
     @Override
-    public AuthenticateResponse login(LoginRequest request) {
-        return null;
+    public User login(LoginRequest request) {
+        Key key = Key.builder()
+                .partitionValue(request.getUsername())
+                .build();
+
+        UserBean userBean = userTable.getItem(
+                (GetItemEnhancedRequest.Builder requestBuilder) -> requestBuilder.key(key));
+
+        return new User(userBean.getFirst_name(), userBean.getLast_name(), userBean.getUser_alias(), userBean.getImage());
     }
 
     @Override
-    public AuthenticateResponse register(RegisterRequest request) {
+    public User register(RegisterRequest request) {
         try {
             UserBean user = new UserBean();
             user.setUser_alias(request.getUsername());
@@ -55,8 +62,7 @@ public class DynamoUserDAO extends DynamoDAO implements UserDAO {
             System.exit(1);
         }
 
-        User user = new User(request.getFirstName(), request.getLastName(), request.getUsername(), request.getImage());
-        return new AuthenticateResponse(user, new AuthToken("placeholder"));
+        return new User(request.getFirstName(), request.getLastName(), request.getUsername(), request.getImage());
     }
 
     @Override
@@ -72,6 +78,16 @@ public class DynamoUserDAO extends DynamoDAO implements UserDAO {
 
         return userTable.getItem(
                 (GetItemEnhancedRequest.Builder requestBuilder) -> requestBuilder.key(key)) != null;
+    }
+
+    @Override
+    public boolean validPassword(String username, String password) {
+        Key key = Key.builder()
+                .partitionValue(username)
+                .build();
+
+        return userTable.getItem(
+                (GetItemEnhancedRequest.Builder requestBuilder) -> requestBuilder.key(key)).getPassword().equals(password);
     }
 
 }
