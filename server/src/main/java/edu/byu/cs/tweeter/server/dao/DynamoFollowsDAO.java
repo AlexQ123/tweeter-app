@@ -8,9 +8,13 @@ import java.util.Map;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.server.dao.bean.FollowsBean;
 import edu.byu.cs.tweeter.util.Pair;
+import software.amazon.awssdk.core.pagination.sync.SdkIterable;
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbIndex;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
+import software.amazon.awssdk.enhanced.dynamodb.model.Page;
+import software.amazon.awssdk.enhanced.dynamodb.model.PageIterable;
 import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
 import software.amazon.awssdk.enhanced.dynamodb.model.QueryEnhancedRequest;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
@@ -72,8 +76,58 @@ public class DynamoFollowsDAO extends DynamoDAO implements FollowsDAO {
     }
 
     @Override
-    public List<User> getFollowers(String followeeHandle, int pageSize, String lastFollower) {
-        return null;
+    public Pair<List<User>, Boolean> getFollowers(String followeeHandle, int pageSize, String lastFollower) {
+        List<FollowsBean> followers = new ArrayList<>();
+        List<User> users = new ArrayList<>();
+        boolean hasMorePages = false;
+
+        try {
+            DynamoDbIndex<FollowsBean> followsIndex = enhancedClient.table("follows", TableSchema.fromBean(FollowsBean.class))
+                    .index("follows_index");
+
+            Key key = Key.builder()
+                    .partitionValue(followeeHandle)
+                    .build();
+
+            QueryEnhancedRequest.Builder requestBuilder = QueryEnhancedRequest.builder()
+                    .queryConditional(QueryConditional.keyEqualTo(key)).limit(pageSize+1);
+
+            if (isNonEmptyString(lastFollower)) {
+                Map<String, AttributeValue> startKey = new HashMap<>();
+                startKey.put("followee_handle", AttributeValue.builder().s(followeeHandle).build());
+                startKey.put("follower_handle", AttributeValue.builder().s(lastFollower).build());
+
+                requestBuilder.exclusiveStartKey(startKey);
+            }
+
+            QueryEnhancedRequest request = requestBuilder.build();
+
+            SdkIterable<Page<FollowsBean>> results = followsIndex.query(request);
+            PageIterable<FollowsBean> pages = PageIterable.create(results);
+
+            pages.stream()
+                    .limit(1)
+                    .forEach(followsPage -> followsPage.items().forEach(f -> followers.add(f)));
+
+            // Check if there's more pages
+            if (followers.size() == pageSize + 1) {
+                hasMorePages = true;
+                followers.remove(followers.size() - 1);
+            }
+
+            // Convert FollowsBean to users
+            for (FollowsBean follower : followers) {
+                User converted = userDAO.getUser(follower.getFollower_handle());
+                users.add(converted);
+            }
+
+        }
+        catch (DynamoDbException e) {
+            System.err.println(e.getMessage());
+            System.exit(1);
+        }
+
+        return new Pair<>(users, hasMorePages);
     }
 
     private static boolean isNonEmptyString(String value) {

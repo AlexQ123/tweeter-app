@@ -8,6 +8,6 @@ import edu.byu.cs.tweeter.util.Pair;
 public interface FollowsDAO {
 
     Pair<List<User>, Boolean> getFollowees(String followerHandle, int pageSize, String lastFollowee);
-    List<User> getFollowers(String followeeHandle, int pageSize, String lastFollower);
+    Pair<List<User>, Boolean> getFollowers(String followeeHandle, int pageSize, String lastFollower);
 
 }

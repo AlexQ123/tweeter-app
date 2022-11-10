@@ -46,10 +46,10 @@ public class FollowService extends Service {
             throw new RuntimeException("[Bad Request] Request needs to have a positive limit");
         }
 
+        //TODO: check for expired/bad authtoken
+
         Pair<List<User>, Boolean> daoResponse = followsDAO.getFollowees(request.getFollowerAlias(), request.getLimit(), request.getLastFolloweeAlias());
         return new GetFollowingResponse(daoResponse.getFirst(), daoResponse.getSecond());
-
-        // return getFollowingDAO().getFollowees(request);
     }
 
     public GetFollowersResponse getFollowers(GetFollowersRequest request) {
@@ -58,7 +58,13 @@ public class FollowService extends Service {
         } else if (request.getLimit() <= 0) {
             throw new RuntimeException("[Bad Request] Request needs to have a positive limit");
         }
-        return getFollowersDAO().getFollowers(request);
+
+        //TODO: check for expired/bad authtoken
+
+        Pair<List<User>, Boolean> daoResponse = followsDAO.getFollowers(request.getFolloweeAlias(), request.getLimit(), request.getLastFollowerAlias());
+        return new GetFollowersResponse(daoResponse.getFirst(), daoResponse.getSecond());
+
+        //return getFollowersDAO().getFollowers(request);
     }
 
     public IsFollowerResponse determineIsFollower(IsFollowerRequest request) {

@@ -25,6 +25,8 @@ public class UserService extends Service {
             throw new RuntimeException("[Bad Request] Missing user alias");
         }
 
+        //TODO: check for expired/bad authtoken
+
         User user = userDAO.getUser(request.getAlias());
 
         if (user == null) {
