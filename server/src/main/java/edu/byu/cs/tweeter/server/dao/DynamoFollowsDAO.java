@@ -43,9 +43,17 @@ public class DynamoFollowsDAO extends DynamoDAO implements FollowsDAO {
 
             QueryEnhancedRequest request = requestBuilder.build();
 
-            followsTable.query(request).items().stream().limit(pageSize).forEach(f -> followees.add(f));
+            followsTable.query(request).items().stream().limit(pageSize+1).forEach(f -> followees.add(f));
 
-            // how do I check if there's more pages?
+            // Check if there's more pages
+            boolean hasMorePages = false;
+            if (followees.size() == pageSize + 1) {
+                hasMorePages = true;
+                followees.remove(followees.size() - 1);
+            }
+
+            //
+
         }
         catch (DynamoDbException e) {
             System.err.println(e.getMessage());

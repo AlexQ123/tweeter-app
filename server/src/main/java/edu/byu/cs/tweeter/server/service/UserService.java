@@ -25,8 +25,15 @@ public class UserService extends Service {
             throw new RuntimeException("[Bad Request] Missing user alias");
         }
 
-        User user = getFakeData().findUserByAlias(request.getAlias());
+        User user = userDAO.getUser(request.getAlias());
+
+        if (user == null) {
+            return new GetUserResponse("User not found.");
+        }
+
         return new GetUserResponse(user);
+//        User user = getFakeData().findUserByAlias(request.getAlias());
+//        return new GetUserResponse(user);
     }
 
     public AuthenticateResponse login(LoginRequest request) {
@@ -36,8 +43,11 @@ public class UserService extends Service {
             throw new RuntimeException("[Bad Request] Missing a password");
         }
 
-        // Check to make sure a user with the requested username exists in the DB
-        if (!userDAO.findUser(request.getUsername())) {
+        // Get the User object
+        User userToLogIn = userDAO.getUser(request.getUsername());
+
+        // Check to make sure the user we got actually exists in the DB
+        if (userToLogIn == null) {
             return new AuthenticateResponse("There is no account that exists with this username.");
         }
 
@@ -48,9 +58,6 @@ public class UserService extends Service {
         if (!userDAO.validPassword(request.getUsername(), request.getPassword())) {
             return new AuthenticateResponse("The password is incorrect.");
         }
-
-        // Now that we know the user exists and the password is correct, get the User object
-        User userToLogIn = userDAO.login(request);
 
         // Add the authtoken
         AuthToken authToken = authTokenDAO.addToken();
@@ -72,7 +79,7 @@ public class UserService extends Service {
         }
 
         // Check to make sure the user alias doesn't already exist in the database
-        if (userDAO.findUser(request.getUsername())) {
+        if (userDAO.getUser(request.getUsername()) != null) {
             return new AuthenticateResponse("Username is taken, please choose a different one.");
         }
 

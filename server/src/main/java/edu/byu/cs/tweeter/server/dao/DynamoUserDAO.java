@@ -18,21 +18,25 @@ public class DynamoUserDAO extends DynamoDAO implements UserDAO {
     private static final DynamoDbTable<UserBean> userTable = enhancedClient.table(TableName, TableSchema.fromBean(UserBean.class));
 
     @Override
-    public User getUser(GetUserRequest request) {
-        return null;
-    }
-
-    @Override
-    public User login(LoginRequest request) {
+    public User getUser(String username) {
         Key key = Key.builder()
-                .partitionValue(request.getUsername())
+                .partitionValue(username)
                 .build();
 
         UserBean userBean = userTable.getItem(
                 (GetItemEnhancedRequest.Builder requestBuilder) -> requestBuilder.key(key));
 
+        if (userBean == null) {
+            return null;
+        }
+
         return new User(userBean.getFirst_name(), userBean.getLast_name(), userBean.getUser_alias(), userBean.getImage());
     }
+
+//    @Override
+//    public User login(String username) {
+//        return null;
+//    }
 
     @Override
     public User register(RegisterRequest request) {
@@ -54,15 +58,15 @@ public class DynamoUserDAO extends DynamoDAO implements UserDAO {
         return new User(request.getFirstName(), request.getLastName(), request.getUsername(), request.getImage());
     }
 
-    @Override
-    public boolean findUser(String username) {
-        Key key = Key.builder()
-                .partitionValue(username)
-                .build();
-
-        return userTable.getItem(
-                (GetItemEnhancedRequest.Builder requestBuilder) -> requestBuilder.key(key)) != null;
-    }
+//    @Override
+//    public boolean findUser(String username) {
+//        Key key = Key.builder()
+//                .partitionValue(username)
+//                .build();
+//
+//        return userTable.getItem(
+//                (GetItemEnhancedRequest.Builder requestBuilder) -> requestBuilder.key(key)) != null;
+//    }
 
     @Override
     public boolean validPassword(String username, String password) {

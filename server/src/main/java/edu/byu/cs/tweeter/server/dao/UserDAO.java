@@ -11,10 +11,10 @@ import edu.byu.cs.tweeter.model.net.response.LogoutResponse;
 
 public interface UserDAO {
 
-    User getUser(GetUserRequest request);
-    User login(LoginRequest request);
+    User getUser(String username);
+//    User login(String username);
     User register(RegisterRequest request);
-    boolean findUser(String username);
+//    boolean findUser(String username);
     boolean validPassword(String username, String password);
 
 }

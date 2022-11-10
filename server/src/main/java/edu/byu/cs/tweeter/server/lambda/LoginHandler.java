@@ -10,7 +10,7 @@ import edu.byu.cs.tweeter.server.service.UserService;
 
 /**
  * An AWS lambda function that logs a user in and returns the user object and an auth code for
- * a successful login.
+ * a successful getUser.
  */
 public class LoginHandler implements RequestHandler<LoginRequest, AuthenticateResponse> {
     @Override
