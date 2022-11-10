@@ -14,6 +14,7 @@ import edu.byu.cs.tweeter.model.net.response.FollowResponse;
 import edu.byu.cs.tweeter.model.net.response.GetCountResponse;
 import edu.byu.cs.tweeter.model.net.response.GetFollowersResponse;
 import edu.byu.cs.tweeter.model.net.response.GetFollowingResponse;
+import edu.byu.cs.tweeter.model.net.response.GetUserResponse;
 import edu.byu.cs.tweeter.model.net.response.IsFollowerResponse;
 import edu.byu.cs.tweeter.model.net.response.UnfollowResponse;
 import edu.byu.cs.tweeter.server.dao.DAOFactory;
@@ -46,7 +47,10 @@ public class FollowService extends Service {
             throw new RuntimeException("[Bad Request] Request needs to have a positive limit");
         }
 
-        //TODO: check for expired/bad authtoken
+        // Check for bad/expired authtoken
+        if (expiredToken(request.getAuthToken().getToken())) {
+            return new GetFollowingResponse("Session expired, please log out and log in again.");
+        }
 
         Pair<List<User>, Boolean> daoResponse = followsDAO.getFollowees(request.getFollowerAlias(), request.getLimit(), request.getLastFolloweeAlias());
         return new GetFollowingResponse(daoResponse.getFirst(), daoResponse.getSecond());
@@ -59,12 +63,13 @@ public class FollowService extends Service {
             throw new RuntimeException("[Bad Request] Request needs to have a positive limit");
         }
 
-        //TODO: check for expired/bad authtoken
+        // Check for bad/expired authtoken
+        if (expiredToken(request.getAuthToken().getToken())) {
+            return new GetFollowersResponse("Session expired, please log out and log in again.");
+        }
 
         Pair<List<User>, Boolean> daoResponse = followsDAO.getFollowers(request.getFolloweeAlias(), request.getLimit(), request.getLastFollowerAlias());
         return new GetFollowersResponse(daoResponse.getFirst(), daoResponse.getSecond());
-
-        //return getFollowersDAO().getFollowers(request);
     }
 
     public IsFollowerResponse determineIsFollower(IsFollowerRequest request) {

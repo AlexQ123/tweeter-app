@@ -40,6 +40,7 @@ public class Service {
         // The token has expired
         long currentTimestamp = new Timestamp(System.currentTimeMillis()).getTime();
         if (currentTimestamp - Long.parseLong(foundToken.getDatetime()) > EXPIRE_TIME) {
+            authTokenDAO.deleteToken(token);
             return true;
         }
 

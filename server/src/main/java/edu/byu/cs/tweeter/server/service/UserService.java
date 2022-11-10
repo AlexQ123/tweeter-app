@@ -25,7 +25,10 @@ public class UserService extends Service {
             throw new RuntimeException("[Bad Request] Missing user alias");
         }
 
-        //TODO: check for expired/bad authtoken
+        // Check for bad/expired authtoken
+        if (expiredToken(request.getAuthToken().getToken())) {
+            return new GetUserResponse("Session expired, please log out and log in again.");
+        }
 
         User user = userDAO.getUser(request.getAlias());
 
@@ -120,16 +123,6 @@ public class UserService extends Service {
             e.printStackTrace();
         }
         return "FAILED TO HASH";
-    }
-
-    /**
-     * Returns the {@link FakeData} object used to generate dummy users and auth tokens.
-     * This is written as a separate method to allow mocking of the {@link FakeData}.
-     *
-     * @return a {@link FakeData} instance.
-     */
-    FakeData getFakeData() {
-        return FakeData.getInstance();
     }
 
 }
