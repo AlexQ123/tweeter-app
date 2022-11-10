@@ -14,7 +14,6 @@ public interface UserDAO {
     User getUser(String username);
 //    User login(String username);
     User register(RegisterRequest request);
-//    boolean findUser(String username);
     boolean validPassword(String username, String password);
 
 }

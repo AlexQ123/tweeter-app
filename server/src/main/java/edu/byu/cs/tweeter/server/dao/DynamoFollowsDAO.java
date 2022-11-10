@@ -7,6 +7,7 @@ import java.util.Map;
 
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.server.dao.bean.FollowsBean;
+import edu.byu.cs.tweeter.util.Pair;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
@@ -21,9 +22,13 @@ public class DynamoFollowsDAO extends DynamoDAO implements FollowsDAO {
 
     private static final DynamoDbTable<FollowsBean> followsTable = enhancedClient.table(TableName, TableSchema.fromBean(FollowsBean.class));
 
+    private final UserDAO userDAO = new DynamoUserDAO();
+
     @Override
-    public List<User> getFollowees(String followerHandle, int pageSize, String lastFollowee) {
+    public Pair<List<User>, Boolean> getFollowees(String followerHandle, int pageSize, String lastFollowee) {
         List<FollowsBean> followees = new ArrayList<>();
+        List<User> users = new ArrayList<>();
+        boolean hasMorePages = false;
 
         try {
             Key key = Key.builder()
@@ -46,13 +51,16 @@ public class DynamoFollowsDAO extends DynamoDAO implements FollowsDAO {
             followsTable.query(request).items().stream().limit(pageSize+1).forEach(f -> followees.add(f));
 
             // Check if there's more pages
-            boolean hasMorePages = false;
             if (followees.size() == pageSize + 1) {
                 hasMorePages = true;
                 followees.remove(followees.size() - 1);
             }
 
-            //
+            // Convert FollowsBean to users
+            for (FollowsBean followee : followees) {
+                User converted = userDAO.getUser(followee.getFollowee_handle());
+                users.add(converted);
+            }
 
         }
         catch (DynamoDbException e) {
@@ -60,7 +68,7 @@ public class DynamoFollowsDAO extends DynamoDAO implements FollowsDAO {
             System.exit(1);
         }
 
-        return null;
+        return new Pair<>(users, hasMorePages);
     }
 
     @Override

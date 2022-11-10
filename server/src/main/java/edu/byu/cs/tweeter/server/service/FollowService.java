@@ -1,7 +1,9 @@
 package edu.byu.cs.tweeter.server.service;
 
+import java.util.List;
 import java.util.Random;
 
+import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.net.request.FollowRequest;
 import edu.byu.cs.tweeter.model.net.request.GetCountRequest;
 import edu.byu.cs.tweeter.model.net.request.GetFollowersRequest;
@@ -17,6 +19,7 @@ import edu.byu.cs.tweeter.model.net.response.UnfollowResponse;
 import edu.byu.cs.tweeter.server.dao.DAOFactory;
 import edu.byu.cs.tweeter.server.dao.GetFollowersDAO;
 import edu.byu.cs.tweeter.server.dao.GetFollowingDAO;
+import edu.byu.cs.tweeter.util.Pair;
 
 /**
  * Contains the business logic for getting the users a user is following.
@@ -43,9 +46,10 @@ public class FollowService extends Service {
             throw new RuntimeException("[Bad Request] Request needs to have a positive limit");
         }
 
+        Pair<List<User>, Boolean> daoResponse = followsDAO.getFollowees(request.getFollowerAlias(), request.getLimit(), request.getLastFolloweeAlias());
+        return new GetFollowingResponse(daoResponse.getFirst(), daoResponse.getSecond());
 
-
-        return getFollowingDAO().getFollowees(request);
+        // return getFollowingDAO().getFollowees(request);
     }
 
     public GetFollowersResponse getFollowers(GetFollowersRequest request) {

@@ -17,4 +17,7 @@ public class DynamoDAOFactory implements DAOFactory {
         return new DynamoAuthTokenDAO();
     }
 
+    @Override
+    public FollowsDAO createFollowsDAO() { return new DynamoFollowsDAO(); }
+
 }

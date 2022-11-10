@@ -32,8 +32,6 @@ public class UserService extends Service {
         }
 
         return new GetUserResponse(user);
-//        User user = getFakeData().findUserByAlias(request.getAlias());
-//        return new GetUserResponse(user);
     }
 
     public AuthenticateResponse login(LoginRequest request) {

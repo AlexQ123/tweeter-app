@@ -58,16 +58,6 @@ public class DynamoUserDAO extends DynamoDAO implements UserDAO {
         return new User(request.getFirstName(), request.getLastName(), request.getUsername(), request.getImage());
     }
 
-//    @Override
-//    public boolean findUser(String username) {
-//        Key key = Key.builder()
-//                .partitionValue(username)
-//                .build();
-//
-//        return userTable.getItem(
-//                (GetItemEnhancedRequest.Builder requestBuilder) -> requestBuilder.key(key)) != null;
-//    }
-
     @Override
     public boolean validPassword(String username, String password) {
         Key key = Key.builder()

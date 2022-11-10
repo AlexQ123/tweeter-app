@@ -5,5 +5,6 @@ public interface DAOFactory {
     UserDAO createUserDAO();
     ImageDAO createImageDAO();
     AuthTokenDAO createAuthTokenDAO();
+    FollowsDAO createFollowsDAO();
 
 }
