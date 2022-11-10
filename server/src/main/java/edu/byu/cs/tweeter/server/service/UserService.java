@@ -1,8 +1,5 @@
 package edu.byu.cs.tweeter.server.service;
 
-import java.sql.Timestamp;
-import java.util.UUID;
-
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.net.request.GetUserRequest;
@@ -12,13 +9,9 @@ import edu.byu.cs.tweeter.model.net.request.RegisterRequest;
 import edu.byu.cs.tweeter.model.net.response.AuthenticateResponse;
 import edu.byu.cs.tweeter.model.net.response.GetUserResponse;
 import edu.byu.cs.tweeter.model.net.response.LogoutResponse;
-import edu.byu.cs.tweeter.server.dao.AuthTokenDAO;
 import edu.byu.cs.tweeter.server.dao.DAOFactory;
-import edu.byu.cs.tweeter.server.dao.DynamoAuthTokenDAO;
-import edu.byu.cs.tweeter.server.dao.DynamoUserDAO;
-import edu.byu.cs.tweeter.server.dao.ImageDAO;
-import edu.byu.cs.tweeter.server.dao.S3ImageDAO;
-import edu.byu.cs.tweeter.server.dao.UserDAO;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import edu.byu.cs.tweeter.util.FakeData;
 
 public class UserService extends Service {
@@ -63,10 +56,6 @@ public class UserService extends Service {
         AuthToken authToken = authTokenDAO.addToken();
 
         return new AuthenticateResponse(userToLogIn, authToken);
-
-//        User user = getDummyUser();
-//        AuthToken authToken = getDummyAuthToken();
-//        return new AuthenticateResponse(user, authToken);
     }
 
     public AuthenticateResponse register(RegisterRequest request) {
@@ -110,27 +99,20 @@ public class UserService extends Service {
     }
 
     private String hashPassword(String password) {
-        return password;
-    }
-
-    /**
-     * Returns the dummy user to be returned by the login operation.
-     * This is written as a separate method to allow mocking of the dummy user.
-     *
-     * @return a dummy user.
-     */
-    User getDummyUser() {
-        return getFakeData().getFirstUser();
-    }
-
-    /**
-     * Returns the dummy auth token to be returned by the login operation.
-     * This is written as a separate method to allow mocking of the dummy auth token.
-     *
-     * @return a dummy auth token.
-     */
-    AuthToken getDummyAuthToken() {
-        return getFakeData().getAuthToken();
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            md.update(password.getBytes());
+            byte[] bytes = md.digest();
+            StringBuilder sb = new StringBuilder();
+            for (byte aByte : bytes) {
+                sb.append(Integer.toString((aByte & 0xff) + 0x100, 16).substring(1));
+            }
+            return sb.toString();
+        }
+        catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return "FAILED TO HASH";
     }
 
     /**

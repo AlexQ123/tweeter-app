@@ -1,14 +1,9 @@
 package edu.byu.cs.tweeter.server.dao;
 
-import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.net.request.GetUserRequest;
 import edu.byu.cs.tweeter.model.net.request.LoginRequest;
-import edu.byu.cs.tweeter.model.net.request.LogoutRequest;
 import edu.byu.cs.tweeter.model.net.request.RegisterRequest;
-import edu.byu.cs.tweeter.model.net.response.AuthenticateResponse;
-import edu.byu.cs.tweeter.model.net.response.GetUserResponse;
-import edu.byu.cs.tweeter.model.net.response.LogoutResponse;
 import edu.byu.cs.tweeter.server.dao.bean.UserBean;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
@@ -21,12 +16,6 @@ public class DynamoUserDAO extends DynamoDAO implements UserDAO {
     private static final String TableName = "user";
 
     private static final DynamoDbTable<UserBean> userTable = enhancedClient.table(TableName, TableSchema.fromBean(UserBean.class));
-
-    private static final String HandleAttr = "user_alias";
-    private static final String PasswordAttr = "password";
-    private static final String FirstNameAttr = "first_name";
-    private static final String LastNameAttr = "last_name";
-    private static final String ImageAttr = "image";
 
     @Override
     public User getUser(GetUserRequest request) {
@@ -63,11 +52,6 @@ public class DynamoUserDAO extends DynamoDAO implements UserDAO {
         }
 
         return new User(request.getFirstName(), request.getLastName(), request.getUsername(), request.getImage());
-    }
-
-    @Override
-    public LogoutResponse logout(LogoutRequest request) {
-        return null;
     }
 
     @Override
