@@ -12,8 +12,6 @@ import software.amazon.awssdk.services.dynamodb.model.DynamoDbException;
 
 public class DynamoAuthTokenDAO extends DynamoDAO implements AuthTokenDAO {
 
-    // private static final long EXPIRE_TIME = 86400000;
-
     private static final String TableName = "authtoken";
 
     private static final DynamoDbTable<AuthTokenBean> authtokenTable = enhancedClient.table(TableName, TableSchema.fromBean(AuthTokenBean.class));
@@ -54,12 +52,7 @@ public class DynamoAuthTokenDAO extends DynamoDAO implements AuthTokenDAO {
     }
 
     @Override
-    public boolean tokenFound(String token) {
-        // The token is null or empty for some reason
-//        if (token.isBlank()) {
-//            return false;
-//        }
-
+    public AuthToken tokenFound(String token) {
         Key key = Key.builder()
                 .partitionValue(token)
                 .build();
@@ -68,16 +61,10 @@ public class DynamoAuthTokenDAO extends DynamoDAO implements AuthTokenDAO {
 
         // The token is not found in the table
         if (foundToken == null) {
-            return false;
+            return null;
         }
 
-        // The token has expired
-//        long currentTimestamp = new Timestamp(System.currentTimeMillis()).getTime();
-//        if (currentTimestamp - foundToken.getTimestamp() > EXPIRE_TIME) {
-//            return false;
-//        }
-
-        return true;
+        return new AuthToken(foundToken.getAuthtoken(), String.valueOf(foundToken.getTimestamp()));
     }
 
 }

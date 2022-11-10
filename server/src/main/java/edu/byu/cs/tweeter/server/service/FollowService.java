@@ -14,13 +14,18 @@ import edu.byu.cs.tweeter.model.net.response.GetFollowersResponse;
 import edu.byu.cs.tweeter.model.net.response.GetFollowingResponse;
 import edu.byu.cs.tweeter.model.net.response.IsFollowerResponse;
 import edu.byu.cs.tweeter.model.net.response.UnfollowResponse;
+import edu.byu.cs.tweeter.server.dao.DAOFactory;
 import edu.byu.cs.tweeter.server.dao.GetFollowersDAO;
 import edu.byu.cs.tweeter.server.dao.GetFollowingDAO;
 
 /**
  * Contains the business logic for getting the users a user is following.
  */
-public class FollowService {
+public class FollowService extends Service {
+
+    public FollowService(DAOFactory daoFactory) {
+        super(daoFactory);
+    }
 
     /**
      * Returns the users that the user specified in the request is following. Uses information in
@@ -37,6 +42,9 @@ public class FollowService {
         } else if(request.getLimit() <= 0) {
             throw new RuntimeException("[Bad Request] Request needs to have a positive limit");
         }
+
+
+
         return getFollowingDAO().getFollowees(request);
     }
 
