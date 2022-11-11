@@ -1,6 +1,5 @@
 package edu.byu.cs.tweeter.server.dao.dynamo;
 
-import java.sql.Timestamp;
 import java.util.List;
 
 import edu.byu.cs.tweeter.model.domain.Status;
@@ -32,8 +31,10 @@ public class DynamoFeedDAO extends DynamoDAO implements FeedDAO {
 
         for (User receiver : receivers) {
             FeedBean feedBean = new FeedBean();
+
             feedBean.setReceiver_alias(receiver.getAlias());
-            feedBean.setTimestamp(Timestamp.valueOf(status.getDate()).getTime());
+            feedBean.setTimestamp(status.getTimestamp());
+            feedBean.setFormattedDateTime(status.getDatetime());
             feedBean.setPost(status.getPost());
             feedBean.setFirst_name(sender.getFirstName());
             feedBean.setLast_name(sender.getLastName());

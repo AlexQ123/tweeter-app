@@ -7,6 +7,7 @@ public class StoryBean {
 
     private String sender_alias;
     private long timestamp;
+    private String formatted_date_time;
     private String post;
     private String first_name;
     private String last_name;
@@ -28,6 +29,14 @@ public class StoryBean {
 
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public String getFormatted_date_time() {
+        return formatted_date_time;
+    }
+
+    public void setFormatted_date_time(String formatted_date_time) {
+        this.formatted_date_time = formatted_date_time;
     }
 
     public String getPost() {

@@ -26,6 +26,7 @@ public class StatusService extends Service {
         } else if(request.getLimit() <= 0) {
             throw new RuntimeException("[Bad Request] Request needs to have a positive limit");
         }
+
         Pair<List<Status>, Boolean> statuses = FakeData.getInstance().getPageOfStatus(request.getLastStatus(), request.getLimit());
         return new GetFeedResponse(statuses.getFirst(), statuses.getSecond());
     }
@@ -36,7 +37,9 @@ public class StatusService extends Service {
         } else if(request.getLimit() <= 0) {
             throw new RuntimeException("[Bad Request] Request needs to have a positive limit");
         }
-        Pair<List<Status>, Boolean> statuses = FakeData.getInstance().getPageOfStatus(request.getLastStatus(), request.getLimit());
+
+        //Pair<List<Status>, Boolean> statuses = FakeData.getInstance().getPageOfStatus(request.getLastStatus(), request.getLimit());
+        Pair<List<Status>, Boolean> statuses = storyDAO.getPagedStory(request.getTargetUserAlias(), request.getLimit(), request.getLastStatus());
         return new GetStoryResponse(statuses.getFirst(), statuses.getSecond());
     }
 
@@ -51,8 +54,8 @@ public class StatusService extends Service {
         }
 
         // what you need to store in the DB when posting a status:
-        // Feed: receiver_alias, timestamp, post, first_name, last_name, image, urls, mentions
-        // Story: sender_alias, timestamp, post, first_name, last_name, image, urls, mentions
+        // Story: sender_alias, timestamp, formatted_date_time, post, first_name, last_name, image, urls, mentions
+        // Feed: receiver_alias, timestamp, formatted_date_time, post, first_name, last_name, image, urls, mentions
         storyDAO.addStatus(request.getStatus());
         feedDAO.addStatus(request.getStatus());
 
