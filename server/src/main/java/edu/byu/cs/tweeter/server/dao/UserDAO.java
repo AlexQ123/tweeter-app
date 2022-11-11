@@ -12,7 +12,6 @@ import edu.byu.cs.tweeter.model.net.response.LogoutResponse;
 public interface UserDAO {
 
     User getUser(String username);
-//    User login(String username);
     User register(RegisterRequest request);
     boolean validPassword(String username, String password);
 

@@ -16,8 +16,6 @@ import edu.byu.cs.tweeter.model.net.response.GetFollowingResponse;
 import edu.byu.cs.tweeter.model.net.response.IsFollowerResponse;
 import edu.byu.cs.tweeter.model.net.response.UnfollowResponse;
 import edu.byu.cs.tweeter.server.dao.DAOFactory;
-import edu.byu.cs.tweeter.server.dao.GetFollowersDAO;
-import edu.byu.cs.tweeter.server.dao.GetFollowingDAO;
 import edu.byu.cs.tweeter.util.Pair;
 
 public class FollowService extends Service {
@@ -122,7 +120,6 @@ public class FollowService extends Service {
         }
 
         return new GetCountResponse(followsDAO.getAllFollowers(request.getTargetUserAlias()).size());
-        //return new GetCountResponse(getFollowersDAO().getFollowerCount(request.getTargetUserAlias()));
     }
 
     public GetCountResponse getFollowingCount(GetCountRequest request) {
@@ -136,13 +133,6 @@ public class FollowService extends Service {
         }
 
         return new GetCountResponse(followsDAO.getAllFollowees(request.getTargetUserAlias()).size());
-        //return new GetCountResponse(getFollowingDAO().getFolloweeCount(request.getTargetUserAlias()));
     }
 
-
-    GetFollowingDAO getFollowingDAO() {
-        return new GetFollowingDAO();
-    }
-
-    GetFollowersDAO getFollowersDAO() { return new GetFollowersDAO(); }
 }

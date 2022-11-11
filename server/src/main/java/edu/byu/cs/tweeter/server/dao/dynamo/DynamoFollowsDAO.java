@@ -27,8 +27,11 @@ import software.amazon.awssdk.services.dynamodb.model.DynamoDbException;
 public class DynamoFollowsDAO extends DynamoDAO implements FollowsDAO {
 
     private static final String TableName = "follows";
+    private static final String IndexName = "follows_index";
 
     private static final DynamoDbTable<FollowsBean> followsTable = enhancedClient.table(TableName, TableSchema.fromBean(FollowsBean.class));
+    private static final DynamoDbIndex<FollowsBean> followsIndex = enhancedClient.table("follows", TableSchema.fromBean(FollowsBean.class))
+            .index(IndexName);
 
     private final UserDAO userDAO = new DynamoUserDAO();
 
@@ -77,9 +80,6 @@ public class DynamoFollowsDAO extends DynamoDAO implements FollowsDAO {
         List<FollowsBean> followers = new ArrayList<>();
         List<User> users = new ArrayList<>();
         boolean hasMorePages = false;
-
-        DynamoDbIndex<FollowsBean> followsIndex = enhancedClient.table("follows", TableSchema.fromBean(FollowsBean.class))
-                .index("follows_index");
 
         Key key = Key.builder()
                 .partitionValue(followeeHandle)
@@ -185,9 +185,6 @@ public class DynamoFollowsDAO extends DynamoDAO implements FollowsDAO {
     public List<User> getAllFollowers(String followeeHandle) {
         List<FollowsBean> followers = new ArrayList<>();
         List<User> users = new ArrayList<>();
-
-        DynamoDbIndex<FollowsBean> followsIndex = enhancedClient.table("follows", TableSchema.fromBean(FollowsBean.class))
-                .index("follows_index");
 
         Key key = Key.builder()
                 .partitionValue(followeeHandle)

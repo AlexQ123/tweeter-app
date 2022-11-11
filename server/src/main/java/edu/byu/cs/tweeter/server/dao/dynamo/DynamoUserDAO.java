@@ -33,11 +33,6 @@ public class DynamoUserDAO extends DynamoDAO implements UserDAO {
         return new User(userBean.getFirst_name(), userBean.getLast_name(), userBean.getUser_alias(), userBean.getImage());
     }
 
-//    @Override
-//    public User login(String username) {
-//        return null;
-//    }
-
     @Override
     public User register(RegisterRequest request) {
         UserBean user = new UserBean();

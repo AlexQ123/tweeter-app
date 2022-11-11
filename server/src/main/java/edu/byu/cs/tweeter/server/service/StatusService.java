@@ -38,6 +38,11 @@ public class StatusService {
         if (request.getStatus() == null) {
             throw new RuntimeException("[Bad Request] Request needs to have a status");
         }
+
+        // what you need to store in the DB when posting a status:
+        // Feed: receiver_alias, timestamp, post, first_name, last_name, image, urls, mentions
+        // Status: receiver_alias, timestamp, post, first_name, last_name, image, urls, mentions
+
         return new PostStatusResponse();
     }
 
