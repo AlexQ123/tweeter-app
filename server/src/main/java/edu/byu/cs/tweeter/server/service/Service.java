@@ -3,8 +3,10 @@ package edu.byu.cs.tweeter.server.service;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.server.dao.AuthTokenDAO;
 import edu.byu.cs.tweeter.server.dao.DAOFactory;
+import edu.byu.cs.tweeter.server.dao.FeedDAO;
 import edu.byu.cs.tweeter.server.dao.FollowsDAO;
 import edu.byu.cs.tweeter.server.dao.ImageDAO;
+import edu.byu.cs.tweeter.server.dao.StoryDAO;
 import edu.byu.cs.tweeter.server.dao.UserDAO;
 import java.sql.Timestamp;
 
@@ -16,12 +18,16 @@ public class Service {
     protected final ImageDAO imageDAO;
     protected final AuthTokenDAO authTokenDAO;
     protected final FollowsDAO followsDAO;
+    protected final StoryDAO storyDAO;
+    protected final FeedDAO feedDAO;
 
     public Service (DAOFactory daoFactory) {
         this.userDAO = daoFactory.createUserDAO();
         this.imageDAO = daoFactory.createImageDAO();
         this.authTokenDAO = daoFactory.createAuthTokenDAO();
         this.followsDAO = daoFactory.createFollowsDAO();
+        this.storyDAO = daoFactory.createStoryDAO();
+        this.feedDAO = daoFactory.createFeedDAO();
     }
 
     protected boolean expiredToken(String token) {

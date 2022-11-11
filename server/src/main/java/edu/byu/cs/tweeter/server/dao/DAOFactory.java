@@ -6,5 +6,7 @@ public interface DAOFactory {
     ImageDAO createImageDAO();
     AuthTokenDAO createAuthTokenDAO();
     FollowsDAO createFollowsDAO();
+    FeedDAO createFeedDAO();
+    StoryDAO createStoryDAO();
 
 }
