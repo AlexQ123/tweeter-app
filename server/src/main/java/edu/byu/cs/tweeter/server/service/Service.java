@@ -37,7 +37,7 @@ public class Service {
         }
 
         // Look for the token in the table
-        AuthToken foundToken = authTokenDAO.tokenFound(token);
+        AuthToken foundToken = authTokenDAO.getToken(token);
         // If the token is not found in the table
         if (foundToken == null) {
             return true;

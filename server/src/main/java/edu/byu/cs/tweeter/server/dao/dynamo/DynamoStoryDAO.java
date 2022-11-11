@@ -34,7 +34,7 @@ public class DynamoStoryDAO extends DynamoStatusDAO implements StoryDAO {
                 .build();
 
         QueryEnhancedRequest.Builder requestBuilder = QueryEnhancedRequest.builder()
-                .queryConditional(QueryConditional.keyEqualTo(key)).scanIndexForward(true);
+                .queryConditional(QueryConditional.keyEqualTo(key)).scanIndexForward(false);
 
         if (lastStatus != null) {
             Map<String, AttributeValue> startKey = new HashMap<>();

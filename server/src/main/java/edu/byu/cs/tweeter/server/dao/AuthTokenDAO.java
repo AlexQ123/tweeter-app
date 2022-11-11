@@ -6,6 +6,6 @@ public interface AuthTokenDAO {
 
     AuthToken addToken();
     void deleteToken(String token);
-    AuthToken tokenFound(String token);
+    AuthToken getToken(String token);
 
 }

@@ -42,7 +42,7 @@ public class DynamoAuthTokenDAO extends DynamoDAO implements AuthTokenDAO {
     }
 
     @Override
-    public AuthToken tokenFound(String token) {
+    public AuthToken getToken(String token) {
         Key key = Key.builder()
                 .partitionValue(token)
                 .build();

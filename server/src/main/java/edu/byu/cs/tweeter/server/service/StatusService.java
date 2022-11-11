@@ -27,6 +27,11 @@ public class StatusService extends Service {
             throw new RuntimeException("[Bad Request] Request needs to have a positive limit");
         }
 
+        // Check for bad/expired authtoken
+        if (expiredToken(request.getAuthToken().getToken())) {
+            return new GetFeedResponse("Session expired, please log out and log in again.");
+        }
+
         Pair<List<Status>, Boolean> statuses = feedDAO.getPagedFeed(request.getTargetUserAlias(), request.getLimit(), request.getLastStatus());
         return new GetFeedResponse(statuses.getFirst(), statuses.getSecond());
     }
