@@ -1,4 +1,4 @@
-package edu.byu.cs.tweeter.server.dao;
+package edu.byu.cs.tweeter.server.dao.dynamo;
 
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
@@ -9,6 +9,8 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Base64;
+
+import edu.byu.cs.tweeter.server.dao.ImageDAO;
 
 public class S3ImageDAO implements ImageDAO {
 

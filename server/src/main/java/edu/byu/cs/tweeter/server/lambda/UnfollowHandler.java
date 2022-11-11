@@ -5,7 +5,7 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 
 import edu.byu.cs.tweeter.model.net.request.UnfollowRequest;
 import edu.byu.cs.tweeter.model.net.response.UnfollowResponse;
-import edu.byu.cs.tweeter.server.dao.DynamoDAOFactory;
+import edu.byu.cs.tweeter.server.dao.dynamo.DynamoDAOFactory;
 import edu.byu.cs.tweeter.server.service.FollowService;
 
 public class UnfollowHandler implements RequestHandler<UnfollowRequest, UnfollowResponse> {

@@ -4,6 +4,7 @@ import android.os.Handler;
 
 import java.io.IOException;
 
+import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.net.TweeterRemoteException;
@@ -32,7 +33,7 @@ public class FollowTask extends AuthenticatedTask {
         // We could do this from the presenter, without a task and handler, but we will
         // eventually access the database from here when we aren't using dummy data.
 
-        FollowRequest request = new FollowRequest(getAuthToken(), followee.getAlias());
+        FollowRequest request = new FollowRequest(getAuthToken(), Cache.getInstance().getCurrUser(), followee);
         FollowResponse response = getServerFacade().follow(request, URL_PATH);
 
         if (response.isSuccess()) {

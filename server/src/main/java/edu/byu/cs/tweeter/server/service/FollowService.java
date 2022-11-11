@@ -88,16 +88,36 @@ public class FollowService extends Service {
     }
 
     public UnfollowResponse unfollow(UnfollowRequest request) {
-        if (request.getFolloweeAlias() == null) {
-            throw new RuntimeException("[Bad Request] Request needs to have a followee alias");
+        if (request.getCurrentUserAlias() == null) {
+            throw new RuntimeException("[Bad Request] Request needs to have the current user's alias.");
         }
+        if (request.getFolloweeAlias() == null) {
+            throw new RuntimeException("[Bad Request] Request needs to have a followee alias.");
+        }
+
+        // Check for bad/expired authtoken
+        if (expiredToken(request.getAuthToken().getToken())) {
+            return new UnfollowResponse("Session expired, please log out and log in again.");
+        }
+
+        followsDAO.deleteFollows(request.getCurrentUserAlias(), request.getFolloweeAlias());
         return new UnfollowResponse();
     }
 
     public FollowResponse follow(FollowRequest request) {
-        if (request.getFolloweeAlias() == null) {
-            throw new RuntimeException("[Bad Request] Request needs to have a followee alias");
+        if (request.getCurrentUser() == null) {
+            throw new RuntimeException("[Bad Request] Request needs to have the current user.");
         }
+        if (request.getFollowee() == null) {
+            throw new RuntimeException("[Bad Request] Request needs to have a followee.");
+        }
+
+        // Check for bad/expired authtoken
+        if (expiredToken(request.getAuthToken().getToken())) {
+            return new FollowResponse("Session expired, please log out and log in again.");
+        }
+
+        followsDAO.addFollows(request.getCurrentUser(), request.getFollowee());
         return new FollowResponse();
     }
 

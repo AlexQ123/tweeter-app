@@ -4,6 +4,7 @@ import android.os.Handler;
 
 import java.io.IOException;
 
+import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.net.TweeterRemoteException;
@@ -32,7 +33,7 @@ public class UnfollowTask extends AuthenticatedTask {
         // We could do this from the presenter, without a task and handler, but we will
         // eventually access the database from here when we aren't using dummy data.
 
-        UnfollowRequest request = new UnfollowRequest(getAuthToken(), followee.getAlias());
+        UnfollowRequest request = new UnfollowRequest(getAuthToken(), Cache.getInstance().getCurrUser().getAlias(), followee.getAlias());
         UnfollowResponse response = getServerFacade().unfollow(request, URL_PATH);
 
         if (response.isSuccess()) {

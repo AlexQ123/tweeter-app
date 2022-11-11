@@ -1,4 +1,4 @@
-package edu.byu.cs.tweeter.server.dao;
+package edu.byu.cs.tweeter.server.dao.dynamo;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import edu.byu.cs.tweeter.model.domain.User;
+import edu.byu.cs.tweeter.server.dao.FollowsDAO;
+import edu.byu.cs.tweeter.server.dao.UserDAO;
 import edu.byu.cs.tweeter.server.dao.bean.FollowsBean;
 import edu.byu.cs.tweeter.util.Pair;
 import software.amazon.awssdk.core.pagination.sync.SdkIterable;
@@ -141,6 +143,26 @@ public class DynamoFollowsDAO extends DynamoDAO implements FollowsDAO {
                 (GetItemEnhancedRequest.Builder requestBuilder) -> requestBuilder.key(key));
 
         return followsBean != null;
+    }
+
+    @Override
+    public void deleteFollows(String followerAlias, String followeeAlias) {
+        Key key = Key.builder()
+                .partitionValue(followerAlias).sortValue(followeeAlias)
+                .build();
+
+        followsTable.deleteItem(key);
+    }
+
+    @Override
+    public void addFollows(User follower, User followee) {
+        FollowsBean followsBean = new FollowsBean();
+        followsBean.setFollower_handle(follower.getAlias());
+        followsBean.setFollower_name(follower.getFirstName() + " " + follower.getLastName());
+        followsBean.setFollowee_handle(followee.getAlias());
+        followsBean.setFollowee_name(followee.getFirstName() + " " + followee.getLastName());
+
+        followsTable.putItem(followsBean);
     }
 
     private static boolean isNonEmptyString(String value) {

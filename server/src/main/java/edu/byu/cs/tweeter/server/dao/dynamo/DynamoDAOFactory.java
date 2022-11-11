@@ -1,4 +1,10 @@
-package edu.byu.cs.tweeter.server.dao;
+package edu.byu.cs.tweeter.server.dao.dynamo;
+
+import edu.byu.cs.tweeter.server.dao.AuthTokenDAO;
+import edu.byu.cs.tweeter.server.dao.DAOFactory;
+import edu.byu.cs.tweeter.server.dao.FollowsDAO;
+import edu.byu.cs.tweeter.server.dao.ImageDAO;
+import edu.byu.cs.tweeter.server.dao.UserDAO;
 
 public class DynamoDAOFactory implements DAOFactory {
 
