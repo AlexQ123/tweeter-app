@@ -40,20 +40,14 @@ public class DynamoUserDAO extends DynamoDAO implements UserDAO {
 
     @Override
     public User register(RegisterRequest request) {
-        try {
-            UserBean user = new UserBean();
-            user.setUser_alias(request.getUsername());
-            user.setPassword(request.getPassword());
-            user.setFirst_name(request.getFirstName());
-            user.setLast_name(request.getLastName());
-            user.setImage(request.getImage());
+        UserBean user = new UserBean();
+        user.setUser_alias(request.getUsername());
+        user.setPassword(request.getPassword());
+        user.setFirst_name(request.getFirstName());
+        user.setLast_name(request.getLastName());
+        user.setImage(request.getImage());
 
-            userTable.putItem(user);
-        }
-        catch (DynamoDbException e) {
-            System.err.println(e.getMessage());
-            System.exit(1);
-        }
+        userTable.putItem(user);
 
         return new User(request.getFirstName(), request.getLastName(), request.getUsername(), request.getImage());
     }

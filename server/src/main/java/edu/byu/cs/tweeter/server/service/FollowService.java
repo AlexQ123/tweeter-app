@@ -1,7 +1,6 @@
 package edu.byu.cs.tweeter.server.service;
 
 import java.util.List;
-import java.util.Random;
 
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.net.request.FollowRequest;
@@ -21,28 +20,17 @@ import edu.byu.cs.tweeter.server.dao.GetFollowersDAO;
 import edu.byu.cs.tweeter.server.dao.GetFollowingDAO;
 import edu.byu.cs.tweeter.util.Pair;
 
-/**
- * Contains the business logic for getting the users a user is following.
- */
 public class FollowService extends Service {
 
     public FollowService(DAOFactory daoFactory) {
         super(daoFactory);
     }
 
-    /**
-     * Returns the users that the user specified in the request is following. Uses information in
-     * the request object to limit the number of followees returned and to return the next set of
-     * followees after any that were returned in a previous request. Uses the {@link GetFollowingDAO} to
-     * get the followees.
-     *
-     * @param request contains the data required to fulfill the request.
-     * @return the followees.
-     */
     public GetFollowingResponse getFollowees(GetFollowingRequest request) {
         if(request.getFollowerAlias() == null) {
             throw new RuntimeException("[Bad Request] Request needs to have a follower alias");
-        } else if(request.getLimit() <= 0) {
+        }
+        if(request.getLimit() <= 0) {
             throw new RuntimeException("[Bad Request] Request needs to have a positive limit");
         }
 
@@ -58,7 +46,8 @@ public class FollowService extends Service {
     public GetFollowersResponse getFollowers(GetFollowersRequest request) {
         if (request.getFolloweeAlias() == null) {
             throw new RuntimeException("[Bad Request] Request needs to have a followee alias");
-        } else if (request.getLimit() <= 0) {
+        }
+        if (request.getLimit() <= 0) {
             throw new RuntimeException("[Bad Request] Request needs to have a positive limit");
         }
 
@@ -74,7 +63,8 @@ public class FollowService extends Service {
     public IsFollowerResponse determineIsFollower(IsFollowerRequest request) {
         if (request.getFollowerAlias() == null) {
             throw new RuntimeException("[Bad Request] Request needs to have a follower alias");
-        } else if (request.getFolloweeAlias() == null) {
+        }
+        if (request.getFolloweeAlias() == null) {
             throw new RuntimeException("[Bad Request] Request needs to have a followee alias");
         }
 
@@ -125,23 +115,31 @@ public class FollowService extends Service {
         if (request.getTargetUserAlias() == null) {
             throw new RuntimeException("[Bad Request] Request needs to have a target user alias");
         }
-        return new GetCountResponse(getFollowersDAO().getFollowerCount(request.getTargetUserAlias()));
+
+        // Check for bad/expired authtoken
+        if (expiredToken(request.getAuthToken().getToken())) {
+            return new GetCountResponse("Session expired, please log out and log in again.");
+        }
+
+        return new GetCountResponse(followsDAO.getAllFollowers(request.getTargetUserAlias()).size());
+        //return new GetCountResponse(getFollowersDAO().getFollowerCount(request.getTargetUserAlias()));
     }
 
     public GetCountResponse getFollowingCount(GetCountRequest request) {
         if (request.getTargetUserAlias() == null) {
             throw new RuntimeException("[Bad Request] Request needs to have a target user alias");
         }
-        return new GetCountResponse(getFollowingDAO().getFolloweeCount(request.getTargetUserAlias()));
+
+        // Check for bad/expired authtoken
+        if (expiredToken(request.getAuthToken().getToken())) {
+            return new GetCountResponse("Session expired, please log out and log in again.");
+        }
+
+        return new GetCountResponse(followsDAO.getAllFollowees(request.getTargetUserAlias()).size());
+        //return new GetCountResponse(getFollowingDAO().getFolloweeCount(request.getTargetUserAlias()));
     }
 
-    /**
-     * Returns an instance of {@link GetFollowingDAO}. Allows mocking of the FollowDAO class
-     * for testing purposes. All usages of FollowDAO should get their FollowDAO
-     * instance from this method to allow for mocking of the instance.
-     *
-     * @return the instance.
-     */
+
     GetFollowingDAO getFollowingDAO() {
         return new GetFollowingDAO();
     }

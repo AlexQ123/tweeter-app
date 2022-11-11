@@ -23,34 +23,22 @@ public class DynamoAuthTokenDAO extends DynamoDAO implements AuthTokenDAO {
         String token = UUID.randomUUID().toString();
         long currentTime = new Timestamp(System.currentTimeMillis()).getTime();
 
-        try {
-            AuthTokenBean authtoken = new AuthTokenBean();
-            authtoken.setAuthtoken(token);
-            authtoken.setTimestamp(currentTime);
+        AuthTokenBean authtoken = new AuthTokenBean();
+        authtoken.setAuthtoken(token);
+        authtoken.setTimestamp(currentTime);
 
-            authtokenTable.putItem(authtoken);
-        }
-        catch (DynamoDbException e) {
-            System.err.println(e.getMessage());
-            System.exit(1);
-        }
+        authtokenTable.putItem(authtoken);
 
         return new AuthToken(token);
     }
 
     @Override
     public void deleteToken(String token) {
-        try {
-            Key key = Key.builder()
-                    .partitionValue(token)
-                    .build();
+        Key key = Key.builder()
+                .partitionValue(token)
+                .build();
 
-            authtokenTable.deleteItem(key);
-        }
-        catch (DynamoDbException e) {
-            System.err.println(e.getMessage());
-            System.exit(1);
-        }
+        authtokenTable.deleteItem(key);
     }
 
     @Override

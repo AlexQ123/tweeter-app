@@ -12,5 +12,7 @@ public interface FollowsDAO {
     boolean checkIsFollower(String followerAlias, String followeeAlias);
     void deleteFollows(String followerAlias, String followeeAlias);
     void addFollows(User follower, User followee);
+    List<User> getAllFollowees(String followerHandle);
+    List<User> getAllFollowers(String followeeHandle);
 
 }
