@@ -13,6 +13,7 @@ import software.amazon.awssdk.enhanced.dynamodb.DynamoDbIndex;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
+import software.amazon.awssdk.enhanced.dynamodb.model.GetItemEnhancedRequest;
 import software.amazon.awssdk.enhanced.dynamodb.model.Page;
 import software.amazon.awssdk.enhanced.dynamodb.model.PageIterable;
 import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
@@ -29,7 +30,7 @@ public class DynamoFollowsDAO extends DynamoDAO implements FollowsDAO {
     private final UserDAO userDAO = new DynamoUserDAO();
 
     @Override
-    public Pair<List<User>, Boolean> getFollowees(String followerHandle, int pageSize, String lastFollowee) {
+    public Pair<List<User>, Boolean> getPagedFollowees(String followerHandle, int pageSize, String lastFollowee) {
         List<FollowsBean> followees = new ArrayList<>();
         List<User> users = new ArrayList<>();
         boolean hasMorePages = false;
@@ -76,7 +77,7 @@ public class DynamoFollowsDAO extends DynamoDAO implements FollowsDAO {
     }
 
     @Override
-    public Pair<List<User>, Boolean> getFollowers(String followeeHandle, int pageSize, String lastFollower) {
+    public Pair<List<User>, Boolean> getPagedFollowers(String followeeHandle, int pageSize, String lastFollower) {
         List<FollowsBean> followers = new ArrayList<>();
         List<User> users = new ArrayList<>();
         boolean hasMorePages = false;
@@ -128,6 +129,18 @@ public class DynamoFollowsDAO extends DynamoDAO implements FollowsDAO {
         }
 
         return new Pair<>(users, hasMorePages);
+    }
+
+    @Override
+    public boolean checkIsFollower(String followerAlias, String followeeAlias) {
+        Key key = Key.builder()
+                .partitionValue(followerAlias).sortValue(followeeAlias)
+                .build();
+
+        FollowsBean followsBean = followsTable.getItem(
+                (GetItemEnhancedRequest.Builder requestBuilder) -> requestBuilder.key(key));
+
+        return followsBean != null;
     }
 
     private static boolean isNonEmptyString(String value) {

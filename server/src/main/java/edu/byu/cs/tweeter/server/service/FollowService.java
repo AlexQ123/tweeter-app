@@ -14,7 +14,6 @@ import edu.byu.cs.tweeter.model.net.response.FollowResponse;
 import edu.byu.cs.tweeter.model.net.response.GetCountResponse;
 import edu.byu.cs.tweeter.model.net.response.GetFollowersResponse;
 import edu.byu.cs.tweeter.model.net.response.GetFollowingResponse;
-import edu.byu.cs.tweeter.model.net.response.GetUserResponse;
 import edu.byu.cs.tweeter.model.net.response.IsFollowerResponse;
 import edu.byu.cs.tweeter.model.net.response.UnfollowResponse;
 import edu.byu.cs.tweeter.server.dao.DAOFactory;
@@ -52,7 +51,7 @@ public class FollowService extends Service {
             return new GetFollowingResponse("Session expired, please log out and log in again.");
         }
 
-        Pair<List<User>, Boolean> daoResponse = followsDAO.getFollowees(request.getFollowerAlias(), request.getLimit(), request.getLastFolloweeAlias());
+        Pair<List<User>, Boolean> daoResponse = followsDAO.getPagedFollowees(request.getFollowerAlias(), request.getLimit(), request.getLastFolloweeAlias());
         return new GetFollowingResponse(daoResponse.getFirst(), daoResponse.getSecond());
     }
 
@@ -68,7 +67,7 @@ public class FollowService extends Service {
             return new GetFollowersResponse("Session expired, please log out and log in again.");
         }
 
-        Pair<List<User>, Boolean> daoResponse = followsDAO.getFollowers(request.getFolloweeAlias(), request.getLimit(), request.getLastFollowerAlias());
+        Pair<List<User>, Boolean> daoResponse = followsDAO.getPagedFollowers(request.getFolloweeAlias(), request.getLimit(), request.getLastFollowerAlias());
         return new GetFollowersResponse(daoResponse.getFirst(), daoResponse.getSecond());
     }
 
@@ -78,7 +77,13 @@ public class FollowService extends Service {
         } else if (request.getFolloweeAlias() == null) {
             throw new RuntimeException("[Bad Request] Request needs to have a followee alias");
         }
-        boolean isFollower = new Random().nextInt() > 0;
+
+        // Check for bad/expired authtoken
+        if (expiredToken(request.getAuthToken().getToken())) {
+            return new IsFollowerResponse("Session expired, please log out and log in again.");
+        }
+
+        boolean isFollower = followsDAO.checkIsFollower(request.getFollowerAlias(), request.getFolloweeAlias());
         return new IsFollowerResponse(isFollower);
     }
 
