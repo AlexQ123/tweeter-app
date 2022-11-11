@@ -27,7 +27,7 @@ public class StatusService extends Service {
             throw new RuntimeException("[Bad Request] Request needs to have a positive limit");
         }
 
-        Pair<List<Status>, Boolean> statuses = FakeData.getInstance().getPageOfStatus(request.getLastStatus(), request.getLimit());
+        Pair<List<Status>, Boolean> statuses = feedDAO.getPagedFeed(request.getTargetUserAlias(), request.getLimit(), request.getLastStatus());
         return new GetFeedResponse(statuses.getFirst(), statuses.getSecond());
     }
 
@@ -38,7 +38,11 @@ public class StatusService extends Service {
             throw new RuntimeException("[Bad Request] Request needs to have a positive limit");
         }
 
-        //Pair<List<Status>, Boolean> statuses = FakeData.getInstance().getPageOfStatus(request.getLastStatus(), request.getLimit());
+        // Check for bad/expired authtoken
+        if (expiredToken(request.getAuthToken().getToken())) {
+            return new GetStoryResponse("Session expired, please log out and log in again.");
+        }
+
         Pair<List<Status>, Boolean> statuses = storyDAO.getPagedStory(request.getTargetUserAlias(), request.getLimit(), request.getLastStatus());
         return new GetStoryResponse(statuses.getFirst(), statuses.getSecond());
     }

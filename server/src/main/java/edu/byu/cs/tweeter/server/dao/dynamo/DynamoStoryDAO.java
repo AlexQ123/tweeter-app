@@ -17,7 +17,7 @@ import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
 import software.amazon.awssdk.enhanced.dynamodb.model.QueryEnhancedRequest;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
-public class DynamoStoryDAO extends DynamoDAO implements StoryDAO {
+public class DynamoStoryDAO extends DynamoStatusDAO implements StoryDAO {
 
     private static final String TableName = "story";
 
@@ -59,6 +59,7 @@ public class DynamoStoryDAO extends DynamoDAO implements StoryDAO {
             User sender = new User(storyBean.getFirst_name(), storyBean.getLast_name(), storyBean.getSender_alias(), storyBean.getImage());
 
             Status status = new Status();
+
             status.setPost(storyBean.getPost());
             status.setUser(sender);
             status.setDatetime(storyBean.getFormatted_date_time());
@@ -85,63 +86,6 @@ public class DynamoStoryDAO extends DynamoDAO implements StoryDAO {
         storyBean.setImage(status.getUser().getImageUrl());
 
         storyTable.putItem(storyBean);
-    }
-
-    private List<String> parseURLs(String post) {
-        List<String> containedUrls = new ArrayList<>();
-        for (String word : post.split("\\s")) {
-            if (word.startsWith("http://") || word.startsWith("https://")) {
-
-                int index = findUrlEndIndex(word);
-
-                word = word.substring(0, index);
-
-                containedUrls.add(word);
-            }
-        }
-
-        return containedUrls;
-    }
-
-    private List<String> parseMentions(String post) {
-        List<String> containedMentions = new ArrayList<>();
-
-        for (String word : post.split("\\s")) {
-            if (word.startsWith("@")) {
-                word = word.replaceAll("[^a-zA-Z0-9]", "");
-                word = "@".concat(word);
-
-                containedMentions.add(word);
-            }
-        }
-
-        return containedMentions;
-    }
-
-    private int findUrlEndIndex(String word) {
-        if (word.contains(".com")) {
-            int index = word.indexOf(".com");
-            index += 4;
-            return index;
-        } else if (word.contains(".org")) {
-            int index = word.indexOf(".org");
-            index += 4;
-            return index;
-        } else if (word.contains(".edu")) {
-            int index = word.indexOf(".edu");
-            index += 4;
-            return index;
-        } else if (word.contains(".net")) {
-            int index = word.indexOf(".net");
-            index += 4;
-            return index;
-        } else if (word.contains(".mil")) {
-            int index = word.indexOf(".mil");
-            index += 4;
-            return index;
-        } else {
-            return word.length();
-        }
     }
 
 }

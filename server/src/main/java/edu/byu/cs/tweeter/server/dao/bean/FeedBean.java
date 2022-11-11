@@ -7,7 +7,7 @@ public class FeedBean {
 
     private String receiver_alias;
     private long timestamp;
-    private String formattedDateTime;
+    private String formatted_date_time;
     private String post;
     private String first_name;
     private String last_name;
@@ -31,12 +31,12 @@ public class FeedBean {
         this.timestamp = timestamp;
     }
 
-    public String getFormattedDateTime() {
-        return formattedDateTime;
+    public String getFormatted_date_time() {
+        return formatted_date_time;
     }
 
-    public void setFormattedDateTime(String formattedDateTime) {
-        this.formattedDateTime = formattedDateTime;
+    public void setFormatted_date_time(String formatted_date_time) {
+        this.formatted_date_time = formatted_date_time;
     }
 
     public String getPost() {
