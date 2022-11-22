@@ -14,8 +14,11 @@ import edu.byu.cs.tweeter.util.Pair;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
+import software.amazon.awssdk.enhanced.dynamodb.model.BatchWriteItemEnhancedRequest;
+import software.amazon.awssdk.enhanced.dynamodb.model.BatchWriteResult;
 import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
 import software.amazon.awssdk.enhanced.dynamodb.model.QueryEnhancedRequest;
+import software.amazon.awssdk.enhanced.dynamodb.model.WriteBatch;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 public class DynamoFeedDAO extends DynamoStatusDAO implements FeedDAO {
@@ -93,6 +96,41 @@ public class DynamoFeedDAO extends DynamoStatusDAO implements FeedDAO {
 
             feedTable.putItem(feedBean);
         }
+    }
+
+    @Override
+    public void batchUpdateFeed(Status status, List<User> followers) {
+        User sender = status.getUser();
+
+        WriteBatch.Builder<FeedBean> writeBatch = WriteBatch.builder(FeedBean.class)
+                .mappedTableResource(feedTable);
+
+        for (User receiver : followers) {
+            FeedBean feedBean = new FeedBean();
+
+            feedBean.setReceiver_alias(receiver.getAlias());
+            feedBean.setTimestamp(status.getTimestamp());
+            feedBean.setFormatted_date_time(status.getDatetime());
+            feedBean.setPost(status.getPost());
+            feedBean.setFirst_name(sender.getFirstName());
+            feedBean.setLast_name(sender.getLastName());
+            feedBean.setImage(sender.getImageUrl());
+
+            //feedTable.putItem(feedBean);
+            writeBatch.addPutItem(feedBean);
+        }
+
+        BatchWriteResult batchResult = enhancedClient.batchWriteItem(BatchWriteItemEnhancedRequest.builder().writeBatches(writeBatch.build()).build());
+
+        do {
+            List<FeedBean> unprocessedItems = batchResult.unprocessedPutItemsForTable(feedTable);
+            if (unprocessedItems.size() != 0) {
+                unprocessedItems.forEach(unprocessedItem -> {
+                    writeBatch.addPutItem(unprocessedItem);
+                });
+                batchResult = enhancedClient.batchWriteItem(BatchWriteItemEnhancedRequest.builder().writeBatches(writeBatch.build()).build());
+            }
+        } while (batchResult.unprocessedPutItemsForTable(feedTable).size() > 0);
     }
 
 }
