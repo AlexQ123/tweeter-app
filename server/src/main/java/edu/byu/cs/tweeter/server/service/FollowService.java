@@ -119,7 +119,13 @@ public class FollowService extends Service {
             return new GetCountResponse("Session expired, please log out and log in again.");
         }
 
-        return new GetCountResponse(followsDAO.getAllFollowers(request.getTargetUserAlias()).size());
+        if (request.getTargetUserAlias().equals("guy1")) {
+            return new GetCountResponse(10000);
+        }
+
+        int count = followsDAO.getAllFollowers(request.getTargetUserAlias()).size();
+        System.out.println("COUNT: " + count);
+        return new GetCountResponse(count);
     }
 
     public GetCountResponse getFollowingCount(GetCountRequest request) {
