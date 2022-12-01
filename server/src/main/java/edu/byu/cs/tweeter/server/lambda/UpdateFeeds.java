@@ -16,7 +16,7 @@ public class UpdateFeeds implements RequestHandler<SQSEvent, Void> {
         StatusService service = new StatusService(new DynamoDAOFactory());
 
         for (SQSEvent.SQSMessage msg : event.getRecords()) {
-            System.out.println(msg.getBody());
+            System.out.println("Message Body: " + msg.getBody());
 
             BatchUpdateFeedRequest batchUpdateFeedRequest = JsonSerializer.deserialize(msg.getBody(), BatchUpdateFeedRequest.class);
 

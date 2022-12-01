@@ -21,12 +21,12 @@ public class PostUpdateFeedMessages implements RequestHandler<SQSEvent, Void> {
 
     @Override
     public Void handleRequest(SQSEvent event, Context context) {
-        String updateFeedQueueURL = "https://sqs.us-west-1.amazonaws.com/140218667860/UpdateFeedQueue";
-
         FollowService service = new FollowService(new DynamoDAOFactory());
 
+        String updateFeedQueueURL = "https://sqs.us-west-1.amazonaws.com/140218667860/UpdateFeedQueue";
+
         for (SQSEvent.SQSMessage msg : event.getRecords()) {
-            System.out.println(msg.getBody());
+            System.out.println("Message Body: " + msg.getBody());
 
             // deserialize the PostStatusRequest
             PostStatusRequest postStatusRequest = JsonSerializer.deserialize(msg.getBody(), PostStatusRequest.class);
